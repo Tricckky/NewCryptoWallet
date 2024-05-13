@@ -7,51 +7,8 @@
 
 import Foundation
 
+//Changing values using a model was throwing a lot of errors so the User class has been deprecated and the functions and member variables have been moved to the WalletViewModel
+
 public class User {
-    private var balance: Double;
-    private var walletList: Array<Wallet>;
-    private var walletCount: Int;
     
-    init() {
-        self.balance = 0;
-        self.walletList = [];
-        self.walletCount = 0;
-    }
-    
-    func addBalance(amount: Double) -> Void {
-        self.balance += amount;
-    }
-    
-    func addWallet(newWallet: Wallet) -> Void {
-        self.walletList.append(newWallet);
-        self.walletCount += 1;
-    }
-    
-    func getBalance() -> Double {
-        return self.balance;
-    }
-    
-    func getWalletList() -> [Wallet] {
-        return self.walletList;
-    }
-    
-    func hasFunds() -> Bool {
-        return self.balance > 0;
-    }
-    
-    func hasRequiredFunds(amountRequired: Double) -> Bool {
-        return self.balance >= amountRequired;
-    }
-    
-    func getNumberOfWallets() -> Int {
-        return self.walletCount;
-    }
-    
-    func hasWallets() -> Bool {
-        return self.getNumberOfWallets() > 0;
-    }
-    
-    func removeBalance(amount: Double) {
-        self.balance -= amount;
-    }
 }

@@ -7,8 +7,11 @@
 
 import Foundation
 class WalletViewModel: ObservableObject  {
-    @Published var user = User();
+    @Published var balance: Double;
+    @Published var walletList: Array<Wallet>;
+    @Published var walletCount: Int;
     @Published var walletTools = WalletTools();
+    @Published var isLoading = true;
     @Published var topThree: [(name: String, change: Double)] = [];
     @Published var viewWalletList: [(name: String, balance: Double, change: Double)] = [
         ("Wallet 1", 0.0, 0.0),
@@ -16,14 +19,21 @@ class WalletViewModel: ObservableObject  {
         ("Wallet 3", 0.0, 0.0)
     ]
     @Published var viewMarketData: [(symbol: String, price: Double, sevenDay: Double)] = [];
+    @Published var marketCryptoNames: [String] = []
+    @Published var marketCryptoRates: [String] = []
+    @Published var marketCryptoProfitLoss: [String] = []
     
     init() {
         //Top Three function wasn't working unless it was called within setCryptoData. Might work without this after
-        //structural changes to code but don't want to break it
+        self.balance = 0;
+        self.walletList = [];
+        self.walletCount = 0;
         walletTools.setCryptoData {
             self.topThree = self.getTopThree()
+            self.loadMarketData()
+            self.isLoading = false;
         }
-        loadMarketData()
+        
     }
     
     func getTopThree() -> [(String, Double)] {
@@ -42,14 +52,14 @@ class WalletViewModel: ObservableObject  {
     }
     
     func handleAddNewWallet(name: String, amount: Double) {
-        if !(self.user.hasRequiredFunds(amountRequired: amount)) {
+        if !(self.hasRequiredFunds(amountRequired: amount)) {
             print("Error: Not enough funds")
             return
         }
         let coin = getCoinByName(name: name);
         let wallet = Wallet(newCoin: coin, audAmount: amount);
-        user.addWallet(newWallet: wallet);
-        user.removeBalance(amount: amount);
+        self.addWallet(newWallet: wallet);
+        self.removeBalance(amount: amount);
         updateWalletView(newWallet: wallet);
     }
     
@@ -64,26 +74,90 @@ class WalletViewModel: ObservableObject  {
     }
     
     func updateWalletView(newWallet: Wallet) {
-        let walletCount = self.user.getNumberOfWallets();
+        let walletCount = getNumberOfWallets();
         let newViewWallet: (name: String, balance: Double, change: Double) = (name: newWallet.getCoinName(), balance: newWallet.getQuantity(), change: newWallet.getDailyChange())
         self.viewWalletList[walletCount-1] = newViewWallet;
     }
     
-    func handleAddFunds(amount: Double) {
-        self.user.addBalance(amount: amount);
+    func loadMarketData() {
+        let cryptoData = walletTools.getCryptoData()
+            guard !cryptoData.isEmpty else {
+                print("Error: Crypto data is empty")
+                return
+            }
+        var tempSymbols: [String] = []
+        var tempPrices: [String] = []
+        var tempSevenDays: [String] = []
+        let percentFormatter = NumberFormatter();
+        percentFormatter.minimumFractionDigits = 1;
+        percentFormatter.maximumFractionDigits = 1;
+        let priceFormatter = NumberFormatter();
+        priceFormatter.minimumFractionDigits = 2;
+        priceFormatter.maximumFractionDigits = 2;
+        print("before looping")
+        for coin in walletTools.getCryptoData() {
+            print("LOOPING THROUGH COINTS NOW")
+            let formattedPercent = percentFormatter.string(from: NSNumber(value: coin.quote.AUD.percent_change_7d)) ?? "0"
+            let formattedPrice = priceFormatter.string(from: NSNumber(value: coin.quote.AUD.price)) ?? "0"
+            tempSymbols.append(coin.symbol)
+            tempPrices.append(formattedPrice)
+            if (coin.quote.AUD.percent_change_7d >= 0) {
+                tempSevenDays.append("+" + formattedPercent + "%");
+            } else {
+                tempSevenDays.append(formattedPercent + "%");
+            }
+        }
+        print("LOADING MARKET DATA")
+        print(tempSymbols);
+        print(tempPrices);
+        print(tempSevenDays);
+        self.marketCryptoNames = tempSymbols;
+        self.marketCryptoRates = tempPrices;
+        self.marketCryptoProfitLoss = tempSevenDays;
+        print("AFTER REPLACING ARRAYS");
+        print(self.marketCryptoNames);
+        print(self.marketCryptoRates);
+        print(self.marketCryptoProfitLoss);
     }
     
-    func loadMarketData() {
-        var tempSymbol: String
-        var tempPrice: Double
-        var tempSevenDay: Double
-        var tempMarketData: [(symbol: String, price: Double, sevenDay: Double)] = []
-        for coin in walletTools.getCryptoData() {
-            tempSymbol = coin.symbol
-            tempPrice = coin.quote.AUD.price
-            tempSevenDay = coin.quote.AUD.percent_change_7d
-            tempMarketData.append((symbol: tempSymbol, price: tempPrice, sevenDay: tempSevenDay))
+    func addBalance(amount: Double) -> Void {
+            self.balance += amount;
+    }
+    
+    func addWallet(newWallet: Wallet) -> Void {
+        DispatchQueue.main.async {
+            self.walletList.append(newWallet);
+            self.walletCount += 1;
         }
-        self.viewMarketData = tempMarketData;
+    }
+    
+    func getBalance() -> Double {
+        return self.balance;
+    }
+    
+    func getWalletList() -> [Wallet] {
+        return self.walletList;
+    }
+    
+    func hasFunds() -> Bool {
+        return self.balance > 0;
+    }
+    
+    func hasRequiredFunds(amountRequired: Double) -> Bool {
+        return self.balance >= amountRequired;
+    }
+    
+    func getNumberOfWallets() -> Int {
+        return self.walletCount;
+    }
+    
+    func hasWallets() -> Bool {
+        return self.getNumberOfWallets() > 0;
+    }
+    
+    func removeBalance(amount: Double) {
+        DispatchQueue.main.async {
+            self.balance -= amount;
+        }
     }
 }

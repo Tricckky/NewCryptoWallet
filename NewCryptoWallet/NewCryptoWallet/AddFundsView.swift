@@ -8,8 +8,8 @@
 import SwiftUI
 
 public struct AddFundsView: View {
+    @ObservedObject var walletViewModel: WalletViewModel
     @Environment(\.presentationMode) var presentationMode
-    @State private var currentBalance: Double = 0.0
     @State private var depositAmount: String = ""
     @State private var nameOnCard: String = ""
     @State private var cardNumber: String = ""
@@ -23,7 +23,7 @@ public struct AddFundsView: View {
             Text("Current Balance:")
                 .padding()
             
-            Text("$\(currentBalance, specifier: "%.2f")")
+            Text("$\(walletViewModel.getBalance(), specifier: "%.2f")")
                 .font(.largeTitle)
                 .fontWeight(.bold)
                 .padding(.bottom, 30)
@@ -103,7 +103,7 @@ public struct AddFundsView: View {
                 Text("Balance After Deposit:")
                     .font(.headline)
                 
-                Text("$\(currentBalance + (Double(depositAmount) ?? 0), specifier: "%.2f")")
+                Text("$\(walletViewModel.getBalance() + (Double(depositAmount) ?? 0), specifier: "%.2f")")
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .disabled(true)
             }
@@ -130,7 +130,7 @@ public struct AddFundsView: View {
                         alertMessage = "Please fill in all the required fields."
                         showAlert = true
                     } else {
-                        currentBalance += Double(depositAmount) ?? 0
+                        walletViewModel.addBalance(amount: Double(depositAmount) ?? 0)
                         presentationMode.wrappedValue.dismiss()
                     }
                 }) {
@@ -162,5 +162,5 @@ extension String {
 }
 
 #Preview {
-    AddFundsView()
+    AddFundsView(walletViewModel: WalletViewModel())
 }

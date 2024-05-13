@@ -8,9 +8,7 @@
 import SwiftUI
 
 public struct MarketView: View {
-    @State private var cryptoNames = ["ETH", "BTC", "XRP", "ADA", "DOT"]
-    @State private var cryptoRates = ["4496.88", "51234.56", "0.78", "1.23", "15.67"]
-    @State private var cryptoProfitLoss = ["+2.5%", "-1.8%", "+3.2%", "+0.9%", "-0.5%"]
+    @ObservedObject var walletViewModel: WalletViewModel
     
     public var body: some View {
         VStack {
@@ -26,23 +24,25 @@ public struct MarketView: View {
             
             ScrollView {
                 VStack(spacing: 10) {
-                    ForEach(0..<cryptoNames.count, id: \.self) { index in
+                    if (walletViewModel.isLoading) {
+                        Text("Loading")
+                    }
+                    ForEach(walletViewModel.marketCryptoNames, id: \.self) { cryptoName in
                         HStack {
-                            TextField("", text: $cryptoNames[index])
+                            Text(cryptoName)
                                 .font(.headline)
-                                .placeholder(when: cryptoNames[index].isEmpty) {
-                                    Text(cryptoNames[index]).foregroundColor(.gray)
-                                }
                             
                             Spacer()
                             
                             VStack(alignment: .trailing) {
-                                Text("1 \(cryptoNames[index]) = $\(cryptoRates[index]) AUD")
+                                if let index = walletViewModel.marketCryptoNames.firstIndex(of: cryptoName) {
+                                Text("1 \(cryptoName) = $\(walletViewModel.marketCryptoRates[index]) AUD")
                                     .font(.subheadline)
                                 
-                                Text(cryptoProfitLoss[index])
+                                Text(walletViewModel.marketCryptoProfitLoss[index])
                                     .font(.subheadline)
-                                    .foregroundColor(cryptoProfitLoss[index].hasPrefix("+") ? .green : .red)
+                                    .foregroundColor(walletViewModel.marketCryptoProfitLoss[index].hasPrefix("+") ? .green : .red)
+                            }
                             }
                         }
                         .padding()
@@ -71,5 +71,6 @@ extension View {
     }
 
 #Preview {
-    MarketView()
+   MarketView(walletViewModel: WalletViewModel())
+    
 }
