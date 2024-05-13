@@ -50,4 +50,8 @@ public class User {
     func hasWallets() -> Bool {
         return self.getNumberOfWallets() > 0;
     }
+    
+    func removeBalance(amount: Double) {
+        self.balance -= amount;
+    }
 }

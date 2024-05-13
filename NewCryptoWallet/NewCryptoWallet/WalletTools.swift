@@ -71,5 +71,4 @@ class WalletTools {
         return self.cryptoData;
     }
     
-    
 }
