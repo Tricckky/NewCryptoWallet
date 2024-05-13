@@ -4,15 +4,15 @@
 //
 //  Created by user245431 on 5/11/24.
 //
-
+  
 import SwiftUI
 
 struct HomeView: View {
 
     init() {
-        var wallet = WalletTools();
-        wallet.setCryptoData {
-            var topThreeGains: [(String, Double)] = wallet.getTopThree();
+        let walletTools = WalletTools();
+        walletTools.setCryptoData {
+            let topThreeGains: [(String, Double)] = walletTools.getTopThree();
         }
     }
     
