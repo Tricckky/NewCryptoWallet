@@ -8,14 +8,12 @@
 import Foundation
 
 public class WalletTools {
-    private var apiKey: String;
-    private var cryptoData: [Coin];
+    //Key would be hidden in a production Application
+    private var apiKey = "76b72de9-d480-4a12-867f-df406e0ee05e"
+    private var cryptoData: [Coin] = []
     
     init() {
-        //In a production application this would be hidden
-        self.apiKey = "76b72de9-d480-4a12-867f-df406e0ee05e"
-        self.cryptoData = [];
-        setCryptoData();
+
     }
     
     struct Coin: Codable {
@@ -36,10 +34,10 @@ public class WalletTools {
     }
     
     struct CoinData: Codable {
-        let data: [Coin]
+        var data: [Coin]
     }
     
-    func setCryptoData() {
+    func setCryptoData(completion: @escaping () -> Void) {
         var apiUrl = URLComponents(string: "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest")!
         apiUrl.queryItems = [
             URLQueryItem(name: "limit", value: "5"),
@@ -56,8 +54,10 @@ public class WalletTools {
                 let decoder = JSONDecoder()
                 do {
                     let coinData = try decoder.decode(CoinData.self, from: data)
-                    print(coinData)
+                    //print(coinData)
                     self.cryptoData = coinData.data
+                    //print(self.cryptoData);
+                    completion()
                 } catch {
                     print("Decoding error: \(error)")
                 }
@@ -68,6 +68,21 @@ public class WalletTools {
     
     func getCryptoData() -> [Coin] {
         return self.cryptoData;
+    }
+    
+    func getTopThree() -> [(String, Double)] {
+        var dailyGainMap: [(String, Double)] = [];
+        var tempName: String = "";
+        var tempGain: Double = 0;
+        for coin in getCryptoData() {
+            tempName = coin.name;
+            tempGain = coin.quote.AUD.percent_change_24h;
+            dailyGainMap.append((tempName, tempGain));
+        }
+        let sortedGainMap = dailyGainMap.sorted { $0.1 > $1.1 }
+        var topThree = Array(sortedGainMap.prefix(3));
+        print(topThree);
+        return topThree;
     }
     
 }

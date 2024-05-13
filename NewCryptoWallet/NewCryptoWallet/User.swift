@@ -8,11 +8,43 @@
 import Foundation
 
 public class User {
-    private var totalBalance: Double;
+    private var balance: Double;
     private var walletList: Array<Wallet>;
     
     init() {
-        self.totalBalance = 0;
+        self.balance = 0;
         self.walletList = [];
+    }
+    
+    func addBalance(amount: Double) -> Void {
+        self.balance += amount;
+    }
+    
+    func addWallet(newWallet: Wallet) -> Void {
+        self.walletList.append(newWallet);
+    }
+    
+    func getBalance() -> Double {
+        return self.balance;
+    }
+    
+    func getWalletList() -> [Wallet] {
+        return self.walletList;
+    }
+    
+    func hasFunds() -> Bool {
+        return self.balance > 0;
+    }
+    
+    func hasRequiredFunds(amountRequired: Double) -> Bool {
+        return self.balance >= amountRequired;
+    }
+    
+    func getNumberOfWallets() -> Int {
+        return self.walletList.count;
+    }
+    
+    func hasWallets() -> Bool {
+        return self.getNumberOfWallets() > 0;
     }
 }
