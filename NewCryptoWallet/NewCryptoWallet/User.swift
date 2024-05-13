@@ -10,10 +10,12 @@ import Foundation
 public class User {
     private var balance: Double;
     private var walletList: Array<Wallet>;
+    private var walletCount: Int;
     
     init() {
         self.balance = 0;
         self.walletList = [];
+        self.walletCount = 0;
     }
     
     func addBalance(amount: Double) -> Void {
@@ -22,6 +24,7 @@ public class User {
     
     func addWallet(newWallet: Wallet) -> Void {
         self.walletList.append(newWallet);
+        self.walletCount += 1;
     }
     
     func getBalance() -> Double {
@@ -41,7 +44,7 @@ public class User {
     }
     
     func getNumberOfWallets() -> Int {
-        return self.walletList.count;
+        return self.walletCount;
     }
     
     func hasWallets() -> Bool {

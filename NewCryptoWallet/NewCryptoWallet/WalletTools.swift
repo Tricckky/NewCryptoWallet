@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class WalletTools {
+class WalletTools {
     //Key would be hidden in a production Application
     private var apiKey = "76b72de9-d480-4a12-867f-df406e0ee05e"
     private var cryptoData: [Coin] = []
@@ -48,6 +48,7 @@ public class WalletTools {
             request.addValue(apiKey, forHTTPHeaderField: "X-CMC_PRO_API_KEY")
 
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            
             if let error = error {
                 print("Error: \(error)")
             } else if let data = data {
@@ -70,19 +71,5 @@ public class WalletTools {
         return self.cryptoData;
     }
     
-    func getTopThree() -> [(String, Double)] {
-        var dailyGainMap: [(String, Double)] = [];
-        var tempName: String = "";
-        var tempGain: Double = 0;
-        for coin in getCryptoData() {
-            tempName = coin.name;
-            tempGain = coin.quote.AUD.percent_change_24h;
-            dailyGainMap.append((tempName, tempGain));
-        }
-        let sortedGainMap = dailyGainMap.sorted { $0.1 > $1.1 }
-        var topThree = Array(sortedGainMap.prefix(3));
-        print(topThree);
-        return topThree;
-    }
     
 }
