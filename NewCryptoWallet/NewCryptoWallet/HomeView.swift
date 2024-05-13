@@ -8,22 +8,7 @@
 import SwiftUI
 
 struct HomeView: View {
-<<<<<<< Updated upstream
 
-    init() {
-        let walletTools = WalletTools();
-        walletTools.setCryptoData {
-            let topThreeGains: [(String, Double)] = walletTools.getTopThree();
-        }
-    }
-    
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-=======
     @StateObject var walletViewModel = WalletViewModel()
     
     var body: some View {
@@ -121,7 +106,6 @@ struct HomeView: View {
             }
         }
         .onAppear {
->>>>>>> Stashed changes
         }
         .padding()
     }
