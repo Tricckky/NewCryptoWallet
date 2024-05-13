@@ -15,11 +15,15 @@ class WalletViewModel: ObservableObject  {
         ("Wallet 2", 0.0, 0.0),
         ("Wallet 3", 0.0, 0.0)
     ]
+    @Published var viewMarketData: [(symbol: String, price: Double, sevenDay: Double)] = [];
     
     init() {
+        //Top Three function wasn't working unless it was called within setCryptoData. Might work without this after
+        //structural changes to code but don't want to break it
         walletTools.setCryptoData {
             self.topThree = self.getTopThree()
         }
+        loadMarketData()
     }
     
     func getTopThree() -> [(String, Double)] {
@@ -37,7 +41,7 @@ class WalletViewModel: ObservableObject  {
         return topThree;
     }
     
-    func addNewWallet(name: String, amount: Double) {
+    func handleAddNewWallet(name: String, amount: Double) {
         if !(self.user.hasRequiredFunds(amountRequired: amount)) {
             print("Error: Not enough funds")
             return
@@ -65,4 +69,21 @@ class WalletViewModel: ObservableObject  {
         self.viewWalletList[walletCount-1] = newViewWallet;
     }
     
+    func handleAddFunds(amount: Double) {
+        self.user.addBalance(amount: amount);
+    }
+    
+    func loadMarketData() {
+        var tempSymbol: String
+        var tempPrice: Double
+        var tempSevenDay: Double
+        var tempMarketData: [(symbol: String, price: Double, sevenDay: Double)] = []
+        for coin in walletTools.getCryptoData() {
+            tempSymbol = coin.symbol
+            tempPrice = coin.quote.AUD.price
+            tempSevenDay = coin.quote.AUD.percent_change_7d
+            tempMarketData.append((symbol: tempSymbol, price: tempPrice, sevenDay: tempSevenDay))
+        }
+        self.viewMarketData = tempMarketData;
+    }
 }
