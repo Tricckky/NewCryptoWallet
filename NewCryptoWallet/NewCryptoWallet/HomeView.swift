@@ -10,7 +10,10 @@ import SwiftUI
 struct HomeView: View {
 
     init() {
-        let wallet = WalletTools();
+        var wallet = WalletTools();
+        wallet.setCryptoData {
+            var topThreeGains: [(String, Double)] = wallet.getTopThree();
+        }
     }
     
     var body: some View {

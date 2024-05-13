@@ -8,4 +8,6 @@
 import Foundation
 class WalletViewModel: ObservableObject  {
     @Published var user = User();
+    
+    
 }
