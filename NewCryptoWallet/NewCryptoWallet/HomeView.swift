@@ -16,9 +16,9 @@ struct HomeView: View {
         ("Wallet 3", 0.0, 0.0)
     ]
     @State private var topCurrencies: [(name: String, change: Double)] = [
-        ("Currency 1", 0.05),
-        ("Currency 2", 0.04),
-        ("Currency 3", 0.03)
+        ("Currency 1", 0.00),
+        ("Currency 2", 0.00),
+        ("Currency 3", 0.00)
     ]
     
     var body: some View {
