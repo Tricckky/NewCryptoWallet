@@ -12,6 +12,8 @@ struct HomeView: View {
     @StateObject var walletViewModel: WalletViewModel
     @State private var showingAddFundsView = false;
     @State private var showingMarketView = false;
+    @State private var showingAddWalletView = false;
+
     
     var body: some View {
         
@@ -78,9 +80,7 @@ struct HomeView: View {
                         }
                         
                         HStack {
-                            Button(action: {
-                                // Add wallet action
-                            }) {
+                            Button(action: {self.showingAddWalletView = true}) {
                                 Text("Add Wallet")
                                     .font(.headline)
                                     .foregroundColor(.white)
@@ -88,6 +88,8 @@ struct HomeView: View {
                                     .padding(.vertical, 8)
                                     .background(Color.blue)
                                     .cornerRadius(8)
+                            }.sheet(isPresented: $showingAddWalletView) {
+                                AddWalletView()
                             }
                             
                             Spacer()
